@@ -21,13 +21,13 @@ document.getElementById('generateButton').addEventListener('click', function() {
         .then(response => response.json())
         .then(data => {
             const aiResponseText = data.generatedResponse;
-            // Split the response into lines
+
             const lines = aiResponseText.split('\n');
 
             // Container to hold the generated HTML content
             let htmlContent = '';
             // Flag to track if we are inside a code block
-    
+
             // Flag to track if we are inside a code block
             let inCodeBlock = false;
 
@@ -43,26 +43,38 @@ document.getElementById('generateButton').addEventListener('click', function() {
                     // Create a code element
                     htmlContent += `<pre><code>${line.substring(3, line.length - 3)}</code></pre>`;
                 }
-                // Check if the line starts and ends with '```' and it's inside a code block
-                else if (line.startsWith('```') && line.endsWith('```') && inCodeBlock) {
-                    // Close the code block
-                    htmlContent += `</code></pre>`;
+                // Check if the line starts with '```' and we're inside a code block
+                else if (line.startsWith('```') && inCodeBlock) {
+                    // Close the current code block
+                    htmlContent += `${line.substring(0, line.length - 3)}</code></pre>`;
+                    // Set inCodeBlock to false
                     inCodeBlock = false;
                 }
-                // Check if the line starts with '```' and it's not inside a code block
+                // Check if the line starts with '```' and we're not inside a code block
                 else if (line.startsWith('```') && !inCodeBlock) {
-                    // Open a code block
-                    htmlContent += `<pre><code>`;
+                    // Open a new code block
+                    htmlContent += `<pre><div class='style-code'><code class='class-code'>${line.substring(3)}</code></div></pre><pre><div class='style-code'><code class='class-code'>`;
+                    // Set inCodeBlock to true
                     inCodeBlock = true;
                 }
-                // For other lines, create a p element
+                // Check if we're inside a code block
+                else if (inCodeBlock) {
+                    // Add the line to the current code block preserving indentation
+                    htmlContent += `${line + '\n'}`;
+                }
+                // Check if we're inside a code block
+                else if (!inCodeBlock) {
+                    // Add the line to the current code block preserving indentation
+                    htmlContent += `</code></div></pre>`;
+                }
                 else {
                     htmlContent += `<p>${line}</p>`;
                 }
+                
             });
-
             // Add the generated HTML content to the element with class 'aiResponse'
             document.querySelector('.aiResponse').innerHTML = htmlContent;
+
         })
     
         .catch((error) => {
@@ -70,26 +82,3 @@ document.getElementById('generateButton').addEventListener('click', function() {
         });
     }
 });
-
-function formatAiResponse(aiResponseText) {
-    const response = document.querySelector('.aiResponse');
-    const lines = aiResponseText.split('\n');
-
-    response.innerHTML = ''; // Clear the content
-
-    lines.forEach(line => {
-        if (line.startsWith('**') && line.endsWith('**')) {
-            const text = line.slice(2, -2);
-            response.innerHTML += `<h2>${text}</h2>`;
-        } else if (line.startsWith('```') && line.endsWith('```')) {
-            const text = line.slice(3, -3);
-            response.innerHTML += `<code>${text}</code>`;
-        } else if (line.startsWith('*')) {
-            const text = line.slice(1);
-            response.innerHTML += `<h3>${text}</h3>`;
-        } else {
-            response.innerHTML += `<p>${line}</p>`;
-        }
-    });
-}
-

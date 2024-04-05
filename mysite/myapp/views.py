@@ -71,9 +71,9 @@ def generate_solution(text_input):
             if response is not None and hasattr(response, 'text'):
                 return response.text
             else:
-                return "Failed to generate solution. Response format is unexpected."
+                return "Failed to generate response"
         
         except requests.exceptions.RequestException as req_err:
             return f"Request error: {str(req_err)}"   
         except Exception as e:
-            return f"Error generating solution: {str(e)}"
+            return f"Error generating response: {str(e)}"
