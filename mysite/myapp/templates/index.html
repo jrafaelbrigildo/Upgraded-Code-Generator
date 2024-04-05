@@ -13,7 +13,9 @@
         <textarea id="textInput" placeholder="Enter text" rows="4" cols="50"></textarea><br>
         {% csrf_token %}
         <button id="generateButton">Generate</button>
-        <textarea id="textArea" rows="10" cols="50" readonly></textarea>  
+    </div>
+    <div class="aiResponse">
+         
     </div>
 
     <script src="{% static 'js/script.js' %}"></script>
